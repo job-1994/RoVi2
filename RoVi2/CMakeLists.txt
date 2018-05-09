@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   std_msgs
+  ur_caros_example
 )
 
 # find_package(PCL 1.2 REQUIRED )
@@ -122,8 +123,8 @@ find_package(OpenCV REQUIRED)
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES RoVi2
- CATKIN_DEPENDS roscpp sensor_msgs std_msgs
- DEPENDS system_lib
+ CATKIN_DEPENDS roscpp sensor_msgs std_msgs ur_caros_example
+ #DEPENDS system_lib
 )
 
 ###########
@@ -169,7 +170,7 @@ add_executable(repub src/subPub.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(vision ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
