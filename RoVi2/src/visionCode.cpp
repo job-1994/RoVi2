@@ -14,12 +14,12 @@
 
 #define DEBUG 1
 
-#define X_BOUND_MIN -0.8698
-#define X_BOUND_MAX -0.1376
-#define Y_BOUND_MIN 0.1288
-#define Y_BOUND_MAX 0.5224
-#define Z_BOUND_MIN 0.3920
-#define Z_BOUND_MAX 1.4113
+#define X_BOUND_MIN -1.049
+#define X_BOUND_MAX -0.4128
+#define Y_BOUND_MIN 0.3222
+#define Y_BOUND_MAX 0.5181
+#define Z_BOUND_MIN 0.3032
+#define Z_BOUND_MAX 1.2814
 
 #define MIN_POINT_COUNT 13
 
@@ -118,26 +118,35 @@ void cloud_callback(const sensor_msgs::PointCloud2 &cloud_msg)
 			for (int index = MIN_POINT_COUNT; index < (int)predicted_points->size(); index++)
 				printf("x: %f, y: %f, z: %f\n", predicted_points->points[index].x, predicted_points->points[index].y, predicted_points->points[index].z);
 
+			std::vector<PointXYZ> final_point;
+
 			for (int index = MIN_POINT_COUNT; index < (int)predicted_points->size(); index++)
 			{
 				if (predicted_points->points[index].x < X_BOUND_MAX && predicted_points->points[index].x > X_BOUND_MIN)
 					if (predicted_points->points[index].y < Y_BOUND_MAX && predicted_points->points[index].y > Y_BOUND_MIN)
-						if (predicted_points->points[index].z < Z_BOUND_MAX && predicted_points->points[index].z > Z_BOUND_MIN)
+						if (predicted_points->points[index].z < Z_BOUND_MAX && predicted_points->points[index].z > Z_BOUND_MIN && found_point == false)
 						{
 							printf("point is ok!! x: %f, y: %f, z: %f\n", predicted_points->points[index].x, predicted_points->points[index].y, predicted_points->points[index].z);
 							/*CALL SERVICE*/
 							found_point = true;
+							final_point.push_back(predicted_points->points[index]);
 						}
 			}
 
 			if(found_point)
 			{
-											ur_caros_example::Vision newTarget;
-							newTarget.request.point.x = -0.4;
-							newTarget.request.point.y = -0.1;
-							newTarget.request.point.z = 0.35;
+				PointXYZ base_point = kalman_filter::converting_cam_to_base(final_point[final_point.size() - 1]);
+				printf("Base coordinates x: %f, y: %f, z: %f\n", base_point.x, base_point.y, base_point.z);
+				ur_caros_example::Vision newTarget;
+				
+				//newTarget.request.point.x = -0.4;
+				//newTarget.request.point.y = -0.1;
+				//newTarget.request.point.z = 0.35;
+				newTarget.request.point.x = base_point.x;
+				newTarget.request.point.y = base_point.y;
+				newTarget.request.point.z = base_point.z;
 
-							sc.call(newTarget);
+				sc.call(newTarget);
 				found_point = false;
 
 			}

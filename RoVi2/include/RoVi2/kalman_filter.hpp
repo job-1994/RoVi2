@@ -25,7 +25,7 @@ public:
 	static PointXYZ correct(cv::KalmanFilter &KF, cv::Mat measurement);
 	static void skipCorrect(cv::KalmanFilter &KF);
 	static PointCloud<PointXYZ>::Ptr predictPoints(PointCloud<PointXYZ>::Ptr measures);
-
+	static PointXYZ converting_cam_to_base(PointXYZ camera_point);
 
 	
 };

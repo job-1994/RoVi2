@@ -8,7 +8,7 @@
 #define MEASUREMENT_NOISE 0.05 // Smaller noise, means the measures are more important
 #define ERROR_COV_POST_NOISE 0.1
 
-#define POINTS_USED 30
+#define POINTS_USED 100
 
 
 // Namespaces
@@ -17,6 +17,53 @@ using namespace pcl;
 using namespace pcl::visualization;
 using namespace pcl::io;
 using namespace cv;
+
+
+
+// Method for converting the point in the camera frame to base frame
+PointXYZ kalman_filter::converting_cam_to_base(PointXYZ camera_point){
+        // Initialize the trasnformation matrix
+        Mat transform_matrix = Mat::zeros(4, 4, CV_32F);
+
+        // First Line
+        transform_matrix.at<float>(0, 0) = 0.4434;
+        transform_matrix.at<float>(0, 1) = 0.0292;
+        transform_matrix.at<float>(0, 2) = -0.8959;
+        transform_matrix.at<float>(0, 3) = 0.6216;
+
+        // Second Line
+        transform_matrix.at<float>(1, 0) = 0.8958;
+        transform_matrix.at<float>(1, 1) = 0.0215;
+        transform_matrix.at<float>(1, 2) = 0.4440;
+        transform_matrix.at<float>(1, 3) = 0.1938;
+
+        // Third Line
+        transform_matrix.at<float>(2, 0) = 0.0322;
+        transform_matrix.at<float>(2, 1) = -0.9993;
+        transform_matrix.at<float>(2, 2) = -0.0166;
+        transform_matrix.at<float>(2, 3) = 0.6566;
+
+        // Fourth Line
+        transform_matrix.at<float>(3, 0) = 0;
+        transform_matrix.at<float>(3, 1) = 0;
+        transform_matrix.at<float>(3, 2) = 0;
+        transform_matrix.at<float>(3, 3) = 1;
+
+        Mat homogeneous_cam_point = Mat::zeros(4, 1, CV_32F);
+        homogeneous_cam_point.at<float>(0, 0) = camera_point.x;
+        homogeneous_cam_point.at<float>(1, 0) = camera_point.y;
+        homogeneous_cam_point.at<float>(2, 0) = camera_point.z;
+        homogeneous_cam_point.at<float>(3, 0) = 1;
+
+        Mat homogeneous_robot_point = Mat::zeros(4, 1, CV_32F);
+        homogeneous_robot_point = transform_matrix*homogeneous_cam_point;
+
+        PointXYZ base_point(homogeneous_robot_point.at<float>(0, 0),
+                                                homogeneous_robot_point.at<float>(1, 0),
+                                                homogeneous_robot_point.at<float>(2, 0));
+        return (base_point);
+}
+
 
 
 cv::KalmanFilter kalman_filter::accelerationKF(PointXYZ initial_point)
