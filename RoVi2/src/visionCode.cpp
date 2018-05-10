@@ -115,8 +115,8 @@ void cloud_callback(const sensor_msgs::PointCloud2 &cloud_msg)
 			}
 			chatter_pub.publish(pub_msg);
 			PointCloud<PointXYZ>::Ptr predicted_points = kalman_filter::predictPoints(temp_pub_cloud);
-			for (int index = MIN_POINT_COUNT; index < (int)predicted_points->size(); index++)
-				printf("x: %f, y: %f, z: %f\n", predicted_points->points[index].x, predicted_points->points[index].y, predicted_points->points[index].z);
+			/*for (int index = MIN_POINT_COUNT; index < (int)predicted_points->size(); index++)
+				printf("x: %f, y: %f, z: %f\n", predicted_points->points[index].x, predicted_points->points[index].y, predicted_points->points[index].z);*/
 
 			std::vector<PointXYZ> final_point;
 
@@ -124,7 +124,7 @@ void cloud_callback(const sensor_msgs::PointCloud2 &cloud_msg)
 			{
 				if (predicted_points->points[index].x < X_BOUND_MAX && predicted_points->points[index].x > X_BOUND_MIN)
 					if (predicted_points->points[index].y < Y_BOUND_MAX && predicted_points->points[index].y > Y_BOUND_MIN)
-						if (predicted_points->points[index].z < Z_BOUND_MAX && predicted_points->points[index].z > Z_BOUND_MIN && found_point == false)
+						if (predicted_points->points[index].z < Z_BOUND_MAX && predicted_points->points[index].z > Z_BOUND_MIN/* && found_point == false*/)
 						{
 							printf("point is ok!! x: %f, y: %f, z: %f\n", predicted_points->points[index].x, predicted_points->points[index].y, predicted_points->points[index].z);
 							/*CALL SERVICE*/
